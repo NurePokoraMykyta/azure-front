@@ -1,0 +1,47 @@
+.Header{
+    width: 100%;
+    height: 82px;
+    background-color: #62695E;
+}
+.Header .header_elements{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.Header .header_elements .header_button_list ul{
+    padding-top: 0;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: row;
+}
+.Header .header_elements .header_button_list ul button{
+    font-family: "Amatic SC", sans-serif;
+    font-size: 30px;
+}
+.header_elements img{
+    width: 120px;
+    height: 60px;
+}
+.header_elements div{
+    min-width: 33.3%;
+}
+.header_elements .header_logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.header_elements .header_profile{
+    display: flex;
+    justify-content: right;
+}
+.header_elements .header_profile div{
+    display: flex;
+    justify-content: right;
+}
+.header_elements .header_profile div div{
+    display: flex;
+    justify-content: center;
+}

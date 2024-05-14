@@ -1,0 +1,10 @@
+.admin_page .admin_page_container .movie_list .movie_map{
+    display: flex;
+    flex-direction: row;
+}
+.admin_page .admin_page_container .movie_list .movie_map img{
+    display: block;
+}
+.admin_page .admin_page_container .movie_list .movie_map .movie_info{
+
+}

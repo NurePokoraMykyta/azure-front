@@ -1,0 +1,91 @@
+div#root {
+    height: 100%;
+}
+.MainPage{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.MainPage .MainPart {
+    height: 690px;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 55px;
+    margin-right: 55px;
+    margin-top: 100px;
+    flex: 1 1 auto;
+}
+.MainPage .MainPart .advertisement {
+    width: 195px;
+    height: 491px;
+    display: flex;
+    align-items: center;
+}
+.MainPage .MainPart .welcome{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1317px;
+    max-height: 690px;
+}
+.MainPage .MainPart .welcome .welcome_left_block{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 412px;
+    height: 690px;
+}
+.MainPage .MainPart .welcome .welcome_center_block{
+    width: 494px;
+    height: 690px;
+    background-image: url("../../../images/mainpage/welcome_center.png");
+    background-size: 494px 690px;
+    box-shadow: rgba(50, 50, 93, 0.25) 300px 300px 600px 300px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.MainPage .MainPart .welcome .welcome_center_block div{
+    text-align: center;
+    color: white;
+}
+.MainPage .MainPart .welcome .welcome_center_block .upper_text{
+    font-size: 64px;
+}
+.MainPage .MainPart .welcome .welcome_center_block .line{
+    width: 416px;
+    height: 1px;
+    background-color: white;
+}
+.MainPage .MainPart .welcome .welcome_center_block .bottom_text{
+    font-size: 36px;
+    font-family: "Amatic SC", sans-serif;
+}
+.MainPage .MainPart .welcome .welcome_right_block{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: space-between;
+    width: 409px;
+    height: 690px;
+}
+.MainPage .MainPart .welcome .welcome_left_block .welcomeUpperLeft{
+    max-width: 358px;
+    max-height: 318px;
+}
+.MainPage .MainPart .welcome .welcome_left_block .welcomeDownLeft{
+    max-width: 361px;
+    max-height: 344px;
+}
+
+.MainPage .MainPart .welcome .welcome_right_block .welcomeUpperRight{
+    max-width: 367px;
+    max-height: 280px;
+}
+.MainPage .MainPart .welcome .welcome_right_block .welcomeDownRight{
+    max-width: 368px;
+    max-height: 377px;
+}
+

@@ -1,0 +1,85 @@
+.movie_list{
+    min-height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.movie_list .movie_list_main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.movie_list .movie_list_container{
+    min-height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 66px 66px 0 66px;
+}
+.movie_list .movie_list_main .movie_list_item{
+    width: 1084px;
+    display: flex;
+    flex-direction: row;
+    margin-top: 66px;
+    color: black;
+    font-size: 25px;
+    line-height: 30px;
+}
+.movie_list .movie_list_main .movie_list_item img{
+    width: 463px;
+    height: 274px;
+}
+.movie_list .movie_list_main .movie_list_item .movie_list_item_info{
+    width: 600px;
+    margin-left: 66px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 0 10px 0;
+}
+.movie_list .movie_list_header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin: 66px 66px 0 66px;
+}
+.movie_list .movie_list_header .movie_list_input{
+    min-width: 33.3%;
+    min-height: 45px;
+}
+.movie_list .movie_list_header .movie_list_input input{
+    min-width: 100%;
+    min-height: 45px;
+    border-radius: 5px;
+    font-size: 25px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.movie_list .movie_list_header .movie_list_title{
+    min-width: 33.3%;
+    min-height: 45px;
+    font-size: 45px;
+    display: flex;
+    justify-content: center;
+}
+.movie_list .movie_list_header .movie_list_filter{
+    min-width: 33.3%;
+    height: 45px;
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+}
+.movie_list .movie_list_header .movie_list_filter select{
+    min-width: 100%;
+    min-height: 45px;
+    border-radius: 5px;
+    font-size: 25px;
+}
+.movie_list .movie_list_main .movie_list_item_info .movie_date_rate{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

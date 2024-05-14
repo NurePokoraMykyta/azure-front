@@ -1,0 +1,15 @@
+.Movie_Page{
+    width: 100%;
+    min-height: 100%;
+    background-image: url("/src/images/movieInfo/background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+
+}
+.Movie_Page .movie_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1815px;
+    min-height: 100%;
+}

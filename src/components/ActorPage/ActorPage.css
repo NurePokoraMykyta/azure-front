@@ -1,0 +1,33 @@
+.movie_header{
+    color: black;
+}
+.actor_wrapper{
+    margin-top: 66px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.actor_wrapper .actor_page_container{
+    max-width: 1371px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.actor_wrapper .actor_page_container img{
+    display: block;
+    width: 200px;
+    height: 280px;
+}
+.actor_wrapper .actor_page_container .actor_info{
+    margin: 10px 0 10px 30px;
+    max-width: 1109px;
+    line-height: 30px;
+}
+.actor_wrapper .actor_page_container .actor_info h2{
+    color: black;
+    font-size: 40px;
+}
+.actor_wrapper .actor_page_container .actor_info h5{
+    color: black;
+    font-size: 25px;
+}
