@@ -2,112 +2,26 @@ import "./MovieMain.css";
 import oscarImg from "../../../images/movieInfo/oscar.png";
 import {Button} from "@mui/material";
 import {grey, yellow} from "@mui/material/colors";
+import {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-const MovieMain = ({id, title, description, oscar}) => {
+const MovieMain = ({id, title, description, oscar, movie}) => {
 
-    const actors = [
-        {
-            id: 1,
-            firstName: "Tom",
-            lastName: "Hanks"
-        },
-        {
-            id: 2,
-            firstName: "Meryl",
-            lastName: "Streep"
-        },
-        {
-            id: 3,
-            firstName: "Leonardo",
-            lastName: "DiCaprio"
-        },
-        {
-            id: 4,
-            firstName: "Scarlett",
-            lastName: "Johansson"
-        },
-        {
-            id: 5,
-            firstName: "Morgan",
-            lastName: "Freeman"
-        },
-        {
-            id: 6,
-            firstName: "Denzel",
-            lastName: "Washington"
-        },
-        {
-            id: 7,
-            firstName: "Angelina",
-            lastName: "Jolie"
-        },
-        {
-            id: 8,
-            firstName: "Brad",
-            lastName: "Pitt"
-        },
-        {
-            id: 9,
-            firstName: "Jennifer",
-            lastName: "Lawrence"
-        },
-        {
-            id: 10,
-            firstName: "Robert",
-            lastName: "Downey Jr."
-        },
-        {
-            id: 11,
-            firstName: "Julia",
-            lastName: "Roberts"
-        },
-        {
-            id: 12,
-            firstName: "Will",
-            lastName: "Smith"
-        },
-        {
-            id: 13,
-            firstName: "Cate",
-            lastName: "Blanchett"
-        },
-        {
-            id: 14,
-            firstName: "Christian",
-            lastName: "Bale"
-        },
-        {
-            id: 15,
-            firstName: "Emma",
-            lastName: "Stone"
-        },
-        {
-            id: 16,
-            firstName: "Ryan",
-            lastName: "Gosling"
-        },
-        {
-            id: 17,
-            firstName: "Kate",
-            lastName: "Winslet"
-        },
-        {
-            id: 18,
-            firstName: "Daniel",
-            lastName: "Day-Lewis"
-        },
-        {
-            id: 19,
-            firstName: "Natalie",
-            lastName: "Portman"
-        },
-        {
-            id: 20,
-            firstName: "Johnny",
-            lastName: "Depp"
+    const [actors, setActors] = useState([]);
+    useEffect(() => {
+        const getAllActors = async (movieId) => {
+            const response = await fetch(`http://localhost:5001/api/actors/movie/${movie}`, {
+                method: "GET"
+            });
+            const data = await response.json();
+            setActors(data)
         }
-    ];
+        console.log(movie);
+        getAllActors(movie)
+    }, [movie]);
 
+    const [transitActor, setTransitActor] = useState()
 
     return (
         <div className="movie_main">
@@ -165,12 +79,16 @@ const MovieMain = ({id, title, description, oscar}) => {
             <div className="actor_list">
                 <h2>Актори</h2>
                 <br/>
-                {actors.map(actor => (
-                    <span key={actor.id}>
-                        <a href="">{actor.firstName} {actor.lastName},</a>{" "}
-                    </span>
+                {actors.map((actor, index) => (
+                    <span key={actor._id}>
+            <Link className="redirect_to_actor" to={`/actors/${actor._id}`}>
+                {actor.fullname}
+            </Link>
+                        {index < actors.length - 1 && ', '}
+        </span>
                 ))}
             </div>
+
         </div>
     );
 }

@@ -56,7 +56,7 @@
 .movie_main .actor_list h2{
     font-size: 40px;
 }
-.movie_main .actor_list span a {
+.movie_main .actor_list span .redirect_to_actor {
     color: #ffffff;
     text-decoration: none;
 }

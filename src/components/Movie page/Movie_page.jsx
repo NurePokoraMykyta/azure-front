@@ -6,8 +6,22 @@ import {useEffect, useState} from "react";
 import {Outlet, useParams} from "react-router-dom";
 
 const Movie_page = () => {
-    const [MovieId, setMovieId] = useState(0)
+    const [MovieId, setMovieId] = useState("")
     const {movieId} = useParams();
+    const [film, setFilm] = useState({})
+    useEffect(() => {
+        const movie = async(movieId) => {
+            // поміняти порт на гейтвей
+            const response = await fetch (`http://localhost:5000/api/movies/${movieId}`, {
+                method: "GET"
+            });
+            const data = await response.json();
+            setFilm(data);
+        }
+        console.log(movieId)
+        movie(movieId);
+    }, [movieId]);
+
 
     const movies = [
         {
@@ -91,12 +105,13 @@ const Movie_page = () => {
         <div className="Movie_Page">
             <div className="movie_container">
                 <Movie_header/>
-                {movieData !== undefined ? (
+                {film !== undefined ? (
                     <MovieMain
-                        id={movieData.id}
-                        title={movieData.title}
-                        description={movieData.description}
-                        oscar={movieData.oscar}
+                        id={film.id}
+                        title={film.title}
+                        description={film.description}
+                        oscar={film.oscar}
+                        movie = {movieId}
                     />
                 ) : (
                     <></>

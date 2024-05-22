@@ -2,7 +2,7 @@ import "./MovieList.css"
 import Header from "../MainPage/Header/Header";
 import Footer from "../MainPage/Footer/Footer";
 import {Button, Menu} from "@mui/material";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 import StarIcon from '@mui/icons-material/Star';
 import {Outlet} from "react-router-dom";
@@ -29,6 +29,21 @@ const MainPart = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+
+
+    const [moviesList, setMoviesList] = useState([])
+
+    useEffect(() => {
+        const getAllMovies = async () => {
+            const response = await fetch(`http://localhost:5050/api/movies`, {
+                method: "GET"
+            });
+            const data = await response.json();
+            setMoviesList(data)
+        }
+        getAllMovies()
+    }, []);
 
     const getRemoteMovies = [
         {
@@ -134,18 +149,16 @@ const MainPart = () => {
     const getFavorites = () => {
         if (favorites) {
             const favoriteMovies = movies.filter(movie =>
-            usersFavorites.some(userFavorite => userFavorite.movieId == movie.id)
+                usersFavorites.some(userFavorite => userFavorite.movieId == movie.id)
             )
             setMovies(favoriteMovies)
-            } else {
+        } else {
             setMovies(getRemoteMovies);
         }
     }
     const addInFavorites = (id) => {
         usersFavorites.push({movieId: id});
     }
-
-
 
 
     return (
@@ -179,29 +192,32 @@ const MainPart = () => {
                         aria-controls={open ? "actors-menu" : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? "true" : undefined}
-                        onClick={() => {setFavorites(fav => !fav); getFavorites()}}>
+                        onClick={() => {
+                            setFavorites(fav => !fav);
+                            getFavorites()
+                        }}>
                         Вивести обране
                     </Button>
                 </div>
             </div>
             <div className="movie_list_container">
                 <div className="movie_list_main">
-                    {movies.map(movie => (
-                        <div key={movie.id} className="movie_list_item">
-                            <img src={movie.img} alt=""/>
+                    {moviesList.map(moviesList => (
+                        <div key={moviesList._id} className="movie_list_item">
+                            <img src={`data:image/png;base64, ${moviesList.image}`} alt="Dynamic Image" />
                             <div className="movie_list_item_info">
                                 <div className="top_block">
-                                    <header>{movie.title}</header>
-                                    <h3>{movie.description}</h3>
+                                    <header>{moviesList.title}</header>
+                                    <h3>{moviesList.description}</h3>
                                 </div>
                                 <div className="movie_date_rate">
-                                    <div className="movie_date">{movie.releaseDate}</div>
-                                    {usersFavorites.map(favorite => favorite.movieId).includes(movie.id) ? (
-                                        <Button onClick={() => addInFavorites(movie.id)} style={{ color: 'yellow' }}>
+                                    <div className="movie_date">{moviesList.releaseDate}</div>
+                                    {usersFavorites.map(favorite => favorite.movieId).includes(moviesList.id) ? (
+                                        <Button onClick={() => addInFavorites(moviesList._id)} style={{color: 'yellow'}}>
                                             <StarIcon/>
                                         </Button>
                                     ) : (
-                                        <Button onClick={() => addInFavorites(movie.id)} style={{ color: 'blue' }}>
+                                        <Button onClick={() => addInFavorites(moviesList._id)} style={{color: 'blue'}}>
                                             <StarIcon/>
                                         </Button>
                                     )}

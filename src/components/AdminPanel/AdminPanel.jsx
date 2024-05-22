@@ -7,6 +7,7 @@ const AdminPanel = () => {
         Movies: 'movies',
         Actors: 'actors'
     }
+
     const Movies = [
         {
             id: 1,
