@@ -29,8 +29,7 @@ const router = createBrowserRouter([
             path: "actors/:actorId",
             element:
                 <ActorPage/>,
-        }
-        ,
+        },
         {
             path: "user/favorites/:userId",
             element:

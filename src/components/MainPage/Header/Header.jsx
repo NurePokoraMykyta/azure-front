@@ -276,7 +276,7 @@ const LoginForm = ({onClose, setLoggedIn}) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        await fetch(`http://localhost:5050/api/sign-in`, {
+        await fetch(`http://localhost:5003/api/sign-in`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
