@@ -40,47 +40,65 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
     const [newMovie, setNewMovie] = useState({
         title: '',
         description: '',
-        img: '',
+        image: null,
         releaseDate: '',
         rating: 0
     })
     const [newActor, setNewActor] = useState({
-        name: '',
+        first_name: '',
+        last_name: '',
         birthDate: '',
         birthCity: '',
-        image: '',
-        biography: ''
+        image: null,
+        biography: '',
+
     })
 
     const handleInputChange = (e, type) => {
         if (type === 'movie') {
-            setNewMovie({ ...newMovie, [e.target.name]: e.target.value })
+            if(e.target.name == 'image'){
+                setNewMovie({...newMovie, image: e.target.files[0]})
+            }
+            setNewMovie({...newMovie, [e.target.name]: e.target.value})
         } else {
-            setNewActor({ ...newActor, [e.target.name]: e.target.value })
+            if(e.target.name == 'image'){
+                setNewActor({...newActor, image: e.target.files[0]})
+            }
+            else setNewActor({...newActor, [e.target.name]: e.target.value})
         }
-    }
-
-    const handleAddActor = () => {
-        const newId = actors.length + 1
-        const newActorObj = { ...newActor, id: newId }
-        setActors([...actors, newActorObj])
-        setNewActor({
-            name: '',
-            birthDate: '',
-            birthCity: '',
-            image: '',
-            biography: ''
-        })
     }
 
     const handleAddMovie = async (e) => {
         e.preventDefault();
-        const response = await fetch(`http://localhost:5050/api/admin/movies/add`, {
+        const formData = new FormData();
+        formData.append("title", newMovie.title)
+        formData.append('releaseDate', newMovie.releaseDate)
+        formData.append('description', newMovie.description)
+        formData.append('rating', newMovie.rating)
+        formData.append('image', newMovie.image)
+
+        const response = await fetch(`http://localhost:5000/api/admin/movies/add`, {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form-data'
             },
-            body: JSON.stringify({})
+            body: formData
+        });
+        const data = await response.json();
+        return data;
+    }
+    const handleAddActor = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('first_name', newActor.first_name)
+        formData.append('last_name', newActor.last_name)
+        formData.append('biography', newActor.biography)
+        formData.append('birthCity', newActor.birthCity)
+        formData.append('birthDate', newActor.birthDate)
+        formData.append('img', newActor.image)
+        const response = await fetch(`http://localhost:5001/api/admin/actors/add`, {
+            method: "POST",
+            body: formData
         });
         const data = await response.json();
         return data;
@@ -109,8 +127,8 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                         <h3>Постер фільму</h3>
                         <input
                             type="text"
-                            name="img"
-                            value={newMovie.img}
+                            name="image"
+                            value={newMovie.image}
                             onChange={(e) => handleInputChange(e, 'movie')}
                         />
                         <h3>Дата релізу</h3>
@@ -127,17 +145,18 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                             value={newMovie.rating}
                             onChange={(e) => handleInputChange(e, 'movie')}
                         />
-                        <Button onClick={handleAddMovie}>Додати фільм</Button>
+                        <input type="file" name="image" onChange={(e) => handleInputChange(e, 'movie')}/>
+                            <Button onClick={handleAddMovie}>Додати фільм</Button>
                         {moviesList.map(movie => (
-                            <div className="movie_map" key={movie.id}>
-                                <img src={movie.img} alt="movieImage"/>
-                                <div className="movie_info">
-                                    <h2>{movie.title}</h2>
-                                    <h5>{movie.description}</h5>
-                                    <h5>{movie.releaseDate}</h5>
-                                    <h5>Рейтинг: {movie.rating}</h5>
-                                </div>
+                        <div className="movie_map" key={movie.id}>
+                            <img src={movie.image} alt="movieImage"/>
+                            <div className="movie_info">
+                                <h2>{movie.title}</h2>
+                                <h5>{movie.description}</h5>
+                                <h5>{movie.releaseDate}</h5>
+                                <h5>Рейтинг: {movie.rating}</h5>
                             </div>
+                        </div>
                         ))}
                     </div>
                 ) : (
@@ -145,9 +164,16 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                         <h2>Додати актора</h2>
                         <input
                             type="text"
-                            name="name"
+                            name="first_name"
                             placeholder="Ім'я та прізвище"
-                            value={newActor.name}
+                            value={newActor.last_name}
+                            onChange={(e) => handleInputChange(e, 'actor')}
+                        />
+                        <input
+                            type="text"
+                            name="last_name"
+                            placeholder="Ім'я та прізвище"
+                            value={newActor.first_name}
                             onChange={(e) => handleInputChange(e, 'actor')}
                         />
                         <input
@@ -164,13 +190,7 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                             value={newActor.birthCity}
                             onChange={(e) => handleInputChange(e, 'actor')}
                         />
-                        <input
-                            type="text"
-                            name="image"
-                            placeholder="URL зображення"
-                            value={newActor.image}
-                            onChange={(e) => handleInputChange(e, 'actor')}
-                        />
+                        <input type="file" name="image" onChange={(e) => handleInputChange(e, 'actor')}/>
                         <textarea
                             name="biography"
                             placeholder="Біографія"
@@ -181,7 +201,7 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                         {Array.isArray(actors) && actors.length > 0 ? (
                             actors.map(actor => (
                                 <div className="movie_map" key={actor._id}>
-                                    <img src={`data:image/jpg;base64,${actor.image}`} alt="Actor Image" />
+                                    <img src={`data:image/jpg;base64,${actor.image}`} alt="Actor Image"/>
                                     <div className="movie_info">
                                         <h2>{actor.first_name} {actor.last_name}</h2>
                                         <h5>{actor.biography}</h5>
