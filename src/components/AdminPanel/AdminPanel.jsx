@@ -76,6 +76,7 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
         formData.append('description', newMovie.description)
         formData.append('rating', newMovie.rating)
         formData.append('image', newMovie.image)
+        formData.append("actors", JSON.stringify(selectedActors.map((actor) => actor._id)));
 
         const response = await fetch(`http://localhost:5000/api/admin/movies/add`, {
             method: "POST",
@@ -103,6 +104,19 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
         const data = await response.json();
         return data;
     }
+
+    const [selectedActors, setSelectedActors] = useState([]);
+
+    const handleSelectActor = (actor) => {
+        setSelectedActors((prevSelectedActors) => [...prevSelectedActors, actor]);
+    };
+
+    const handleRemoveActor = (actorId) => {
+        setSelectedActors((prevSelectedActors) =>
+            prevSelectedActors.filter((actor) => actor._id !== actorId)
+        );
+    };
+
 
     return (
         <div className="admin_page">
@@ -145,6 +159,22 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                             value={newMovie.rating}
                             onChange={(e) => handleInputChange(e, 'movie')}
                         />
+                        <h3>Оберіть акторів</h3>
+                        <div>
+                            {actors.map((actor) => (
+                                <div key={actor._id}>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedActors.some((selectedActor) => selectedActor._id === actor._id)}
+                                            onChange={() => handleSelectActor(actor)}
+                                        />
+                                        {actor.first_name} {actor.last_name}
+                                    </label>
+                                    <button onClick={() => handleRemoveActor(actor._id)}>Видалити</button>
+                                </div>
+                            ))}
+                        </div>
                         <input type="file" name="image" onChange={(e) => handleInputChange(e, 'movie')}/>
                             <Button onClick={handleAddMovie}>Додати фільм</Button>
                         {moviesList.map(movie => (
