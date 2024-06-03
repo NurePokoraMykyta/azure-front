@@ -14,7 +14,7 @@ import {
     Tooltip, Typography
 } from "@mui/material";
 import {grey} from "@mui/material/colors";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Logout, Settings} from "@mui/icons-material";
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -23,6 +23,40 @@ import logoImg from "../../../images/mainpage/logo.png";
 import Underheader from "../Underheader/Underheader";
 import ModalContent from "../Modal/ModalContent";
 import CloseIcon from '@mui/icons-material/Close';
+
+const registerFetch = async (username, password) => {
+    return await fetch(`http://localhost:5050/api/sign-up`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({username: username, password: password})
+    })
+}
+
+const loginFetch = async (username, password) => {
+    const response = await fetch(`http://localhost:5003/api/sign-in`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({username: username, password: password})
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        if (data.status === "ok") {
+            const token = data.token;
+            localStorage.setItem("token", token);
+            return true; // Повертаємо true у випадку успішного входу
+        } else {
+            throw new Error(data.statusMessage);
+        }
+    } else {
+        throw new Error(response.status);
+    }
+};
+
 
 const Header = () => {
     return (
@@ -111,19 +145,19 @@ const Profile = ({}) => {
                 open={isRegisterModalOpen}
                 onClose={handleRegisterModalClose}
             >
-            <RegisterForm
-                onClose={handleRegisterModalClose}
-                setLoggedIn={setLoggedIn}
-            />
+                <RegisterForm
+                    onClose={handleRegisterModalClose}
+                    setLoggedIn={setLoggedIn}
+                />
             </Modal>
             <Modal
                 open={isLoginModalOpen}
                 onClose={handleLoginModalClose}
             >
-            <LoginForm
-                onClose={handleLoginModalClose}
-                setLoggedIn={setLoggedIn}
-            />
+                <LoginForm
+                    onClose={handleLoginModalClose}
+                    setLoggedIn={setLoggedIn}
+                />
             </Modal>
             <div className="header_profile">
                 <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
@@ -268,201 +302,201 @@ const Profile = ({}) => {
 const theme = createTheme()
 
 const LoginForm = ({onClose, setLoggedIn}) => {
-
+    const [isSumbit, setIsSumbit] = useState(false);
     const [parameters, setParameters] = useState({
         username: '',
         password: ''
     });
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        await fetch(`http://localhost:5003/api/sign-in`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({username: parameters.username, password: parameters.password})
-        }).then((response) => {
-            if (response.ok) {
-                return response.json()
-            } else {
-                throw new Error(response.status);
-            }
-        }).then((data) => {
-            if (data.status == "ok") {
-                const token = data.token;
-                localStorage.setItem("token", token);
+
+    useEffect(() => {
+        const handleButtonLoginClose = async () => {
+            try {
+                await loginFetch(parameters.username, parameters.password);
                 setLoggedIn(true);
-            } else {
-                throw new Error(data.statusMessage)
+            } catch (err) {
+                console.log(err);
+            } finally {
+                onClose();
+                setIsSumbit(false);
             }
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
+        };
+
+        if (isSumbit) {
+            handleButtonLoginClose();
+        }
+    }, [isSumbit]);
+
 
     return (
-            <ModalContent>
-                <IconButton
-                    sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        color: (theme) => theme.palette.grey[500],
-                    }}
-                    onClick={onClose}
-                >
-                    <CloseIcon/>
-                </IconButton>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Sign-in
-                </Typography>
-                <Container maxWidth="md">
-                    <Box component="form" sx={{mt: 1}}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    id="login"
-                                    label="Login"
-                                    name="login"
-                                    autoComplete="login"
-                                    onChange={(e) =>
-                                        setParameters({...parameters, login: e.target.value})
-                                    }
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="current-password"
-                                    onChange={(e) =>
-                                        setParameters({...parameters, password: e.target.value})
-                                    }
-                                />
-                            </Grid>
+        <ModalContent>
+            <IconButton
+                sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: (theme) => theme.palette.grey[500],
+                }}
+                onClick={onClose}
+            >
+                <CloseIcon/>
+            </IconButton>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+                Sign-in
+            </Typography>
+            <Container maxWidth="md">
+                <Box component="form" sx={{mt: 1}}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="login"
+                                label="Login"
+                                name="login"
+                                autoComplete="login"
+                                onChange={(e) =>
+                                    setParameters({...parameters, username: e.target.value})
+                                }
+                            />
                         </Grid>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                mx: 0,
-                            }}
-                            onClick={(e) => {
-                                handleLogin(e);
-                            }
-                            }
-                        >
-                            Sign In
-                        </Button>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={(e) =>
+                                    setParameters({...parameters, password: e.target.value})
+                                }
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                            mt: 3,
+                            mb: 2,
+                            mx: 0,
+                        }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setIsSumbit(true)
+                        }
+                        }
+                    >
+                        Sign In
+                    </Button>
 
-                    </Box>
-                </Container>
-            </ModalContent>
+                </Box>
+            </Container>
+        </ModalContent>
     )
 }
 
-const RegisterForm = ({onClose, setLoggedIn}) => {
+const RegisterForm = (props) => {
 
-
+    const [isSumbit, setIsSumbit] = useState(false);
     const [parameters, setParameters] = useState({
         username: '',
         password: ''
     });
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        const response = await fetch(`http://localhost:5050/api/sign-up`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({username: parameters.username, password: parameters.password})
-        });
-        return await response.json();
-    }
-    return (
-            <ModalContent>
-                <IconButton
-                    sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        color: (theme) => theme.palette.grey[500],
-                    }}
-                    onClick={onClose}
+    useEffect(() => {
 
-                >
-                    <CloseIcon/>
-                </IconButton>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Sign-up
-                </Typography>
-                <Container maxWidth="md">
-                    <Box component="form" sx={{mt: 1}}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    id="login"
-                                    label="Login"
-                                    name="login"
-                                    autoComplete="login"
-                                    onChange={(e) =>
-                                        setParameters({...parameters, login: e.target.value})
-                                    }
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                    onChange={(e) =>
-                                        setParameters({...parameters, password: e.target.value})
-                                    }
-                                />
-                            </Grid>
+        if (isSumbit == true) {
+            const handleButtonRegisterClose = async () => {
+                try {
+                    await registerFetch(parameters.username, parameters.password);
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    props.onClose();
+                    setIsSumbit(false);
+                }
+            }
+            handleButtonRegisterClose();
+        }
+    }, [isSumbit]);
+
+    return (
+        <ModalContent>
+            <IconButton
+                sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: (theme) => theme.palette.grey[500],
+                }}
+                onClick={props.onClose}
+            >
+                <CloseIcon/>
+            </IconButton>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+                Sign-up
+            </Typography>
+            <Container maxWidth="md">
+                <Box component="form" sx={{mt: 1}}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="login"
+                                label="Login"
+                                name="login"
+                                autoComplete="login"
+                                onChange={(e) =>
+                                    setParameters({...parameters, username: e.target.value})
+                                }
+                            />
                         </Grid>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                mx: 0,
-                            }}
-                            onClick={(e) => {
-                                handleRegister(e);
-                            }
-                            }
-                        >
-                            Sign Up
-                        </Button>
-                    </Box>
-                </Container>
-            </ModalContent>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="new-password"
+                                onChange={(e) =>
+                                    setParameters({...parameters, password: e.target.value})
+                                }
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                            mt: 3,
+                            mb: 2,
+                            mx: 0,
+                        }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setIsSumbit(true);
+                        }
+                        }
+                    >
+                        Sign Up
+                    </Button>
+                </Box>
+            </Container>
+        </ModalContent>
     )
 }
 
