@@ -79,13 +79,13 @@ const MovieMain = ({id, title, description, oscar, movie}) => {
             <div className="actor_list">
                 <h2>Актори</h2>
                 <br/>
-                {actors.map((actor, index) => (
+                {Array.isArray(actors) && actors.map((actor, index) => (
                     <span key={actor._id}>
-            <Link className="redirect_to_actor" to={`/actors/${actor._id}`}>
-                {actor.fullname}
-            </Link>
+        <Link className="redirect_to_actor" to={`/actors/${actor._id}`}>
+            {actor.fullname}
+        </Link>
                         {index < actors.length - 1 && ', '}
-        </span>
+    </span>
                 ))}
             </div>
 

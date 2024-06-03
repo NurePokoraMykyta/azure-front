@@ -18,10 +18,10 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                 method: "GET"
             });
             const data = await response.json();
-            setMoviesList(data)
-        }
-        getAllMovies()
-    }, []);
+            setMoviesList(data);
+        };
+        getAllMovies();
+    }, [moviesList]);
 
     const [actors, setActors] = useState([]);
     useEffect(() => {
@@ -34,7 +34,7 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
         }
         console.log(movie);
         getAllActors(movie)
-    }, [movie]);
+    }, [actors]);
 
     const [adminPage, setAdminPage] = useState(category.Movies)
     const [newMovie, setNewMovie] = useState({
@@ -73,20 +73,40 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
     const handleAddMovie = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append("title", newMovie.title)
-        formData.append('releaseDate', newMovie.releaseDate)
-        formData.append('description', newMovie.description)
-        formData.append('rating', newMovie.rating)
-        formData.append("actors", JSON.stringify(selectedActors.map((actor) => actor._id)))
-        formData.append('img', newMovie.image)
-        console.log(newMovie.image)
+        formData.append("title", newMovie.title);
+        formData.append('releaseDate', newMovie.releaseDate);
+        formData.append('description', newMovie.description);
+        formData.append('rating', newMovie.rating);
 
-        const response = await fetch(`http://localhost:5000/api/admin/movies/add`, {
-            method: "POST",
-            body: formData
-        });
-        const data = await response.json();
-        return data;
+        // Формуємо рядок з іменами та прізвищами акторів
+        const actorsString = selectedActors.map(actor => `${actor.first_name} ${actor.last_name}`).join(', ');
+        formData.append("actor_names", actorsString);
+
+        formData.append('img', newMovie.image);
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/admin/movies/add`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const newMovieData = await response.json();
+                setMoviesList((prevMoviesList) => [...prevMoviesList, newMovieData]);
+                setNewMovie({
+                    title: '',
+                    description: '',
+                    image: null,
+                    releaseDate: '',
+                    rating: 0
+                });
+                setSelectedActors([]);
+            } else {
+                console.error('Failed to add movie');
+            }
+        } catch (error) {
+            console.error('Error adding movie:', error);
+        }
     }
     const handleAddActor = async (e) => {
         e.preventDefault();
@@ -172,7 +192,7 @@ const AdminPanel = ({id, title, description, oscar, movie}) => {
                         <Button onClick={handleAddMovie}>Додати фільм</Button>
                         {moviesList.map(movie => (
                             <div className="movie_map" key={movie.id}>
-                                <img src={`data:image/jpg;base64,${movie.fileBin}`} alt="movieImage"/>
+                                <img src={`data:image/jpg;base64,${movie.image}`} alt="movieImage"/>
                                 <div className="movie_info">
                                     <h2>{movie.title}</h2>
                                     <h5>{movie.description}</h5>

@@ -14,7 +14,7 @@ import {
     Tooltip, Typography
 } from "@mui/material";
 import {grey} from "@mui/material/colors";
-import {useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {Logout, Settings} from "@mui/icons-material";
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -23,9 +23,12 @@ import logoImg from "../../../images/mainpage/logo.png";
 import Underheader from "../Underheader/Underheader";
 import ModalContent from "../Modal/ModalContent";
 import CloseIcon from '@mui/icons-material/Close';
+import {useNavigate} from "react-router-dom";
+
+const AuthContext = createContext();
 
 const registerFetch = async (username, password) => {
-    return await fetch(`http://localhost:5050/api/sign-up`, {
+    return await fetch(`http://localhost:5003/api/sign-up`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -44,14 +47,11 @@ const loginFetch = async (username, password) => {
     });
 
     if (response.ok) {
+        console.log("ok")
         const data = await response.json();
-        if (data.status === "ok") {
-            const token = data.token;
-            localStorage.setItem("token", token);
-            return true; // Повертаємо true у випадку успішного входу
-        } else {
-            throw new Error(data.statusMessage);
-        }
+        const token = data.token;
+        localStorage.setItem("token", token);
+        return true;
     } else {
         throw new Error(response.status);
     }
@@ -59,43 +59,54 @@ const loginFetch = async (username, password) => {
 
 
 const Header = () => {
+    const token = localStorage.getItem("token");
+    const [loggedIn, setLoggedIn] = useState(false);
+    useEffect(() => {
+        if (token) {
+            setLoggedIn(true);
+        }
+    }, []);
     return (
-        <div className="Header">
-            <div className="header_elements">
-                <div className="header_button_list">
-                    <List>
-                        <ListItem>
-                            <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
-                                Пункт
-                            </Button>
-                        </ListItem>
-                        <ListItem>
-                            <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
-                                Пункт
-                            </Button>
-                        </ListItem>
-                        <ListItem>
-                            <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
-                                Пункт
-                            </Button>
-                        </ListItem>
-                        <ListItem>
-                            <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
-                                Пункт
-                            </Button>
-                        </ListItem>
-                    </List>
+        <AuthContext.Provider value={{loggedIn, setLoggedIn}}>
+            <div className="Header">
+                <div className="header_elements">
+                    <div className="header_button_list">
+                        <List>
+                            <ListItem>
+                                <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
+                                    Пункт
+                                </Button>
+                            </ListItem>
+                            <ListItem>
+                                <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
+                                    Пункт
+                                </Button>
+                            </ListItem>
+                            <ListItem>
+                                <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
+                                    Пункт
+                                </Button>
+                            </ListItem>
+                            <ListItem>
+                                <Button variant="text" className="header_btn" sx={{color: grey[100], width: 90}}>
+                                    Пункт
+                                </Button>
+                            </ListItem>
+                        </List>
+                    </div>
+                    <div className="header_logo">
+                        <img src={logoImg} alt=""/>
+                    </div>
+                    <Profile/>
                 </div>
-                <div className="header_logo">
-                    <img src={logoImg} alt=""/>
-                </div>
-                <Profile/>
             </div>
-        </div>
+        </AuthContext.Provider>
     );
 }
 
 const Profile = ({}) => {
+    const navigate = useNavigate();
+    const {loggedIn, setLoggedIn} = useContext(AuthContext);
     const user_info = {
         name: 'Микита',
         surname: 'Покора',
@@ -118,8 +129,6 @@ const Profile = ({}) => {
     const handleCheckboxChange = (event) => {
         setChecked(event.target.checked);
     };
-
-    const [loggedIn, setLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const profile_menu_color = "444445";
 
@@ -137,7 +146,10 @@ const Profile = ({}) => {
     const handleRegisterModalClose = () => {
         setRegisterModalOpen(false);
     };
-
+    const handleAdminPanelClick = () => {
+        navigate('/admin');
+        handleClose();
+    };
 
     return (
         <>
@@ -156,7 +168,6 @@ const Profile = ({}) => {
             >
                 <LoginForm
                     onClose={handleLoginModalClose}
-                    setLoggedIn={setLoggedIn}
                 />
             </Modal>
             <div className="header_profile">
@@ -222,20 +233,26 @@ const Profile = ({}) => {
                             </ListItemIcon>
                             Налаштування
                         </MenuItem>
-                        <Link to="/admin">
-                            <MenuItem onClick={handleClose} sx={{color: "#F2F2F2"}}>
+                        <Link to="admin">
+                            <MenuItem onClick={handleAdminPanelClick} sx={{color: "#F2F2F2"}}>
 
                                 <ListItemIcon>
 
                                     <LightbulbIcon fontSize="small" sx={{color: "#ffffff"}}/>
 
                                 </ListItemIcon>
-
                                 Адмін панель
                             </MenuItem>
                         </Link>
 
-                        <MenuItem onClick={handleClose} sx={{color: "#F2F2F2"}}>
+                        <MenuItem
+                            onClick={() => {
+                                localStorage.removeItem("token");
+                                handleClose();
+                                window.location.reload();
+                            }}
+                            sx={{color: "#F2F2F2"}}
+                        >
                             <ListItemIcon>
                                 <Logout fontSize="small" sx={{color: "#ffffff"}}/>
                             </ListItemIcon>
@@ -301,7 +318,8 @@ const Profile = ({}) => {
 
 const theme = createTheme()
 
-const LoginForm = ({onClose, setLoggedIn}) => {
+const LoginForm = ({onClose}) => {
+    const {loggedIn, setLoggedIn} = useContext(AuthContext);
     const [isSumbit, setIsSumbit] = useState(false);
     const [parameters, setParameters] = useState({
         username: '',
@@ -313,7 +331,8 @@ const LoginForm = ({onClose, setLoggedIn}) => {
         const handleButtonLoginClose = async () => {
             try {
                 await loginFetch(parameters.username, parameters.password);
-                setLoggedIn(true);
+                setLoggedIn(true)
+                console.log(loggedIn);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -403,7 +422,7 @@ const LoginForm = ({onClose, setLoggedIn}) => {
 }
 
 const RegisterForm = (props) => {
-
+    const {loggedIn, setLoggedIn} = useContext(AuthContext);
     const [isSumbit, setIsSumbit] = useState(false);
     const [parameters, setParameters] = useState({
         username: '',
